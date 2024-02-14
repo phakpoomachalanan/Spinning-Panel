@@ -1,7 +1,7 @@
 #include <Servo.h>
 
-// https://randomnerdtutorials.com/esp32-servo-motor-web-server-arduino-ide/
-// ServoESP32 V 1.0.3
+// credit: https://randomnerdtutorials.com/esp32-servo-motor-web-server-arduino-ide/
+// req: ServoESP32 V 1.0.3
 
 static const int servoPin = 13;
 
