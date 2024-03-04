@@ -31,7 +31,7 @@ typedef struct bothSend {
 ldrReceive ldrR;
 ldrSend ldrS;
 directionSend dirS;
-botthSend bothS;
+bothSend bothS;
 
 static const int diff = 1000;
 
