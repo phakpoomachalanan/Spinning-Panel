@@ -23,6 +23,8 @@ typedef struct struct_massage2 {
   int ldr2;
   int ldr3;
   int ldr4;
+  int x;
+  int y;
 } struct_massage2;
 
 struct_massage2 ldr;
@@ -32,6 +34,7 @@ static const int diff = 1000;
 
 
 esp_now_peer_info_t peerInfo;
+esp_now_peer_info_t peerInfo2;
 
 void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
   Serial.print("\r\nLast Packet Send Status:\t");
@@ -76,15 +79,16 @@ void setup() {
 void loop() {
   x=0;
   y=0;
-  int ldr.ldr1 = analogRead(ldr1);
+  ldr.ldr1 = analogRead(ldr1);
   
-  int ldr.ldr2 = analogRead(ldr2);
+  ldr.ldr2 = analogRead(ldr2);
 
-  int ldr.ldr3 = analogRead(ldr3);
+  ldr.ldr3 = analogRead(ldr3);
   
-  int ldr.ldr4 = analogRead(ldr4);
+  ldr.ldr4 = analogRead(ldr4);
   printf("[%d][%d][%d][%d]",ldr.ldr1,ldr.ldr2,ldr.ldr3,ldr.ldr4);
-  esp_err_t result;
+  esp_err_t result1;
+  esp_err_t result2;
   if(ldr.ldr1 >= ldr.ldr2 && ldr.ldr1 >= ldr.ldr3 && ldr.ldr1 >= ldr.ldr4) {
     if(ldr.ldr2 > ldr.ldr4) {
       if(ldr.ldr1 - ldr.ldr2 < diff){
@@ -150,6 +154,8 @@ void loop() {
   printf("[%d, %d]\n", x, y);
   Deg.x = x;
   Deg.y = y;
+  ldr.x = x;
+  ldr.y = y;
   result1 = esp_now_send(broadcastAddress1, (uint8_t *) &Deg, sizeof(Deg));
   result2 = esp_now_send(broadcastAddress2, (uint8_t *) &ldr, sizeof(ldr));
   if (result1 == ESP_OK && result2 == ESP_OK) {
