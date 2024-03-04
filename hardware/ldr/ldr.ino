@@ -2,10 +2,10 @@
 // req: ServoESP32 V 1.0.3
 #include "WiFi.h"
 #include <esp_now.h>
-static const int ldr1 = 36;
-static const int ldr2 = 39;
-static const int ldr3 = 34;
-static const int ldr4 = 35;
+static const int ldr1 = 34;
+static const int ldr2 = 35;
+static const int ldr3 = 36;
+static const int ldr4 = 39;
 
 
 uint8_t broadcastAddress1[] = {0xE8, 0xDB, 0x84, 0x00, 0xFB, 0xC4};
@@ -90,6 +90,7 @@ void loop() {
   esp_err_t result1;
   esp_err_t result2;
   if(ldr.ldr1 >= ldr.ldr2 && ldr.ldr1 >= ldr.ldr3 && ldr.ldr1 >= ldr.ldr4) {
+    x=45;
     if(ldr.ldr2 > ldr.ldr4) {
       if(ldr.ldr1 - ldr.ldr2 < diff){
         x=(90-(float(ldr.ldr1 - ldr.ldr2) / diff *45));
@@ -105,6 +106,7 @@ void loop() {
       y=90;
     }
   } else if(ldr.ldr2 >= ldr.ldr1 && ldr.ldr2 >= ldr.ldr3 && ldr.ldr2 >= ldr.ldr4) {
+    x=135;
     if(ldr.ldr3 > ldr.ldr1) {
       if(ldr.ldr2 - ldr.ldr3 < diff){
         x=180-(float(ldr.ldr2 - ldr.ldr3) / diff *45);
@@ -120,12 +122,13 @@ void loop() {
       y=90;
     }
   } else if(ldr.ldr3 >= ldr.ldr1 && ldr.ldr3 >= ldr.ldr2 && ldr.ldr3 >= ldr.ldr4) {
+    x=225;
     if(ldr.ldr4 > ldr.ldr2) {
       if(ldr.ldr3 - ldr.ldr4 < diff){
         x=270-(float(ldr.ldr3 - ldr.ldr4) / diff *45);
       }
     } else {
-      if(ldr.ldr2 - ldr.ldr1 < diff){
+      if(ldr.ldr3 - ldr.ldr2 < diff){
         x=180+((float(ldr.ldr3 - ldr.ldr2) / diff *45));
       }
     }
@@ -135,6 +138,7 @@ void loop() {
       y=90;
     }
   } else {
+    x=315;
     if(ldr.ldr1 > ldr.ldr3) {
       if(ldr.ldr4 - ldr.ldr1 < diff){
         x=360-(float(ldr.ldr4 - ldr.ldr3) / diff *45);
