@@ -68,7 +68,72 @@ void OnDataReceive(const uint8_t *mac_addr, const uint8_t *incomingData, int len
   bothS.ldr = temp;
 
   // get direction
-  // wait for direction logic
+  if(ldrR.ldr1 >= ldrR.ldr2 && ldrR.ldr1 >= ldrR.ldr3 && ldrR.ldr1 >= ldrR.ldr4) {
+    x=45;
+    if(ldrR.ldr2 > ldrR.ldr4) {
+      if(ldrR.ldr1 - ldrR.ldr2 < diff){
+        x=(90-(float(ldrR.ldr1 - ldrR.ldr2) / diff *45));
+      }
+    } else {
+      if(ldrR.ldr1 - ldrR.ldr4 < diff){
+        x=((float(ldrR.ldr1 - ldrR.ldr4) / diff) *45);
+      }
+    }
+    if(ldrR.ldr1- ldrR.ldr3 < diff){
+      y=(float(ldrR.ldr1 - ldrR.ldr3) / diff *90);
+    } else {
+      y=90;
+    }
+  } else if(ldrR.ldr2 >= ldrR.ldr1 && ldrR.ldr2 >= ldrR.ldr3 && ldrR.ldr2 >= ldrR.ldr4) {
+    x=135;
+    if(ldrR.ldr3 > ldrR.ldr1) {
+      if(ldrR.ldr2 - ldrR.ldr3 < diff){
+        x=180-(float(ldrR.ldr2 - ldrR.ldr3) / diff *45);
+      }
+    } else {
+      if(ldrR.ldr2 - ldrR.ldr1 < diff){
+        x=90+((float(ldrR.ldr2 - ldrR.ldr1) / diff *45));
+      }
+    }
+    if(ldrR.ldr2- ldrR.ldr4 < diff){
+      y=(float(ldrR.ldr2 - ldrR.ldr4) / diff *90);
+    } else {
+      y=90;
+    }
+  } else if(ldrR.ldr3 >= ldrR.ldr1 && ldrR.ldr3 >= ldrR.ldr2 && ldrR.ldr3 >= ldrR.ldr4) {
+    x=225;
+    if(ldrR.ldr4 > ldrR.ldr2) {
+      if(ldrR.ldr3 - ldrR.ldr4 < diff){
+        x=270-(float(ldrR.ldr3 - ldrR.ldr4) / diff *45);
+      }
+    } else {
+      if(ldrR.ldr3 - ldrR.ldr2 < diff){
+        x=180+((float(ldrR.ldr3 - ldrR.ldr2) / diff *45));
+      }
+    }
+    if(ldrR.ldr3- ldrR.ldr1 < diff){
+      y=(float(ldrR.ldr3 - ldrR.ldr1) / diff *90);
+    } else {
+      y=90;
+    }
+  } else {
+    x=315;
+    if(ldrR.ldr1 > ldrR.ldr3) {
+      if(ldrR.ldr4 - ldrR.ldr1 < diff){
+        x=360-(float(ldrR.ldr4 - ldrR.ldr3) / diff *45);
+      }
+    } else {
+      if(ldrR.ldr4 - ldrR.ldr3 < diff){
+        x=270+((float(ldrR.ldr4 - ldrR.ldr3) / diff *45));
+      }
+    }
+    if(ldrR.ldr4- ldrR.ldr2 < diff){
+      y=(float(ldrR.ldr4 - ldrR.ldr2) / diff *90);
+    } else {
+      y=90;
+    }
+  }
+  y = 90-y;
 
   bothS.x = x;
   bothS.y = y;
