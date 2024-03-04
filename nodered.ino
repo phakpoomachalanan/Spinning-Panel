@@ -12,10 +12,7 @@ WiFiUDP udp;
 esp_now_peer_info_t peerInfo;
 
 struct Data {
-  int ldr1;
-  int ldr2;
-  int ldr3;
-  int ldr4;
+  int ldr;
   int x, y;
 };
 
@@ -43,14 +40,9 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
   Serial.printf("direction: %d\n", data.x);
   udp.endPacket();
   // avg brightness
-  /*Serial.printf("ldr1: %d\n", data.ldr1);
-  Serial.printf("ldr2: %d\n", data.ldr2);
-  Serial.printf("ldr3: %d\n", data.ldr3);
-  Serial.printf("ldr4: %d\n", data.ldr4);*/
-  double avg = (data.ldr1+data.ldr2+data.ldr3+data.ldr4)/4;
   udp.beginPacket(udpAddress, 30002);
-  udp.write(reinterpret_cast<const uint8_t*>(std::to_string((int)avg).c_str()), sizeof(const uint8_t)*std::to_string((int)avg).length());
-  Serial.printf("brightness: %d\n", (int) avg);
+  udp.write(reinterpret_cast<const uint8_t*>(std::to_string(data.ldr).c_str()), sizeof(const uint8_t)*std::to_string(data.ldr).length());
+  Serial.printf("brightness: %d\n", (int) data.ldr);
   udp.endPacket();
 }
 
