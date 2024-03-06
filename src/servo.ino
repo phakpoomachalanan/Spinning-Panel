@@ -21,10 +21,12 @@ struct angle {
 esp_now_peer_info_t peerInfo;
 angle data; 
 
+uint8_t sender[] = { 0x3C, 0x61, 0x05, 0x03, 0x41, 0xA0 };
 
-
-void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
-  memcpy(&data, incomingData, sizeof(data));
+void OnDataRecv(const uint8_t * mac_addr, const uint8_t *incomingData, int len) {
+    if (mac_addr[0] == sender[0] && mac_addr[1] == sender[1] && mac_addr[2] == sender[2] && mac_addr[3] == sender[3] && mac_addr[4] == sender[4] && mac_addr[5] == sender[5]) {
+    memcpy(&data, incomingData, sizeof(data));
+  }
 }
 
 void setup() {
