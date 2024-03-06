@@ -1,10 +1,11 @@
 #include <WiFi.h>
 #include <WiFiUdp.h>
 #include <esp_now.h>
+#include <esp_wifi.h>
 
 const char * ssid = "Bruh";
 const char * pwd = "bruh1234";
-const char * udpAddress = "192.168.247.10";
+const char * udpAddress = "192.168.156.10";
 //bool flag = false;
 //int firstAngle = 0;
 
@@ -20,15 +21,6 @@ Data data;
 
 void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
   memcpy(&data, incomingData, sizeof(data));
-  //if (!flag) {
-  //  firstAngle = data.x;
-  //  flag = true;
-  //}
-  //int ang = data.y;
-  //if (flag && abs(data.x-firstAngle) > 160) {
-  //  ang = 180-ang;
-  //}
-
   //sun angle
   udp.beginPacket(udpAddress, 30000);
   udp.write(reinterpret_cast<const uint8_t*>(std::to_string(data.y).c_str()), sizeof(const uint8_t)*std::to_string(data.y).length());
@@ -42,7 +34,7 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
   // avg brightness
   udp.beginPacket(udpAddress, 30002);
   udp.write(reinterpret_cast<const uint8_t*>(std::to_string(data.ldr).c_str()), sizeof(const uint8_t)*std::to_string(data.ldr).length());
-  Serial.printf("brightness: %d\n", (int) data.ldr);
+  Serial.printf("brightness: %d\n", data.ldr);
   udp.endPacket();
 }
 
@@ -50,9 +42,10 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
-
+  delay(2000);
+  
   // esp now init
-  WiFi.mode(WIFI_STA);
+  WiFi.mode(WIFI_AP_STA);
   Serial.print("MAC Address: ");
   Serial.println(WiFi.macAddress());
   if (esp_now_init() != ESP_OK) {
@@ -62,6 +55,10 @@ void setup() {
   esp_now_register_recv_cb(OnDataRecv);
 
   // wifi init
+  WiFi.printDiag(Serial); 
+  esp_wifi_set_promiscuous(true);
+  esp_wifi_set_channel(1, WIFI_SECOND_CHAN_NONE);
+  esp_wifi_set_promiscuous(false);
   Serial.println("connecting to wifi");
   WiFi.begin(ssid, pwd);
   Serial.println("");
@@ -73,6 +70,10 @@ void setup() {
   Serial.print("connected to ");
   Serial.print(ssid);
   Serial.println("");
+  esp_wifi_set_promiscuous(true);
+  esp_wifi_set_channel(1, WIFI_SECOND_CHAN_NONE);
+  esp_wifi_set_promiscuous(false);
+  WiFi.printDiag(Serial);
 }
 
 void loop() {
