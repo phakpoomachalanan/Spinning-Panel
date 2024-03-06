@@ -2,7 +2,7 @@
 #include <esp_now.h>
 
 uint8_t ldrSender[] = { 0x3C, 0x61, 0x05, 0x03, 0xD5, 0xCC };          //PAN
-uint8_t ldrReceiver[] = { 0x24, 0x6F, 0x28 0x28, 0x99 0x9C };          // PONG
+uint8_t ldrReceiver[] = { 0x24, 0x6F, 0x28, 0x28, 0x99, 0x9C };          // PONG
 uint8_t directionReceiver[] = { 0xE8, 0xDB, 0x84, 0x00, 0xFB, 0xC4 };  // KIT
 uint8_t bothReceiver[] = { 0xE8, 0x68, 0xE7, 0x22, 0xB0, 0xE4 };       // NM
 
@@ -49,13 +49,6 @@ void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
 }
 
 void OnDataReceive(const uint8_t *mac_addr, const uint8_t *incomingData, int len) {
-  esp_err_t result1;
-  esp_err_t result2;
-  esp_err_t result3;
-
-  if (ldrSender != mac_addr) {
-    Serial.println("Receive Fail");
-  }
   Serial.println("Receive Success");
 
   memcpy(&ldrR, incomingData, sizeof(ldrR));
@@ -63,7 +56,7 @@ void OnDataReceive(const uint8_t *mac_addr, const uint8_t *incomingData, int len
   y = 0;
 
   // avg ldr
-  int temp = (ldr1 + ldr2 + ldr3 + ldr4) >> 2;
+  int temp = (ldrR.ldr1 + ldrR.ldr2 + ldrR.ldr3 + ldrR.ldr4) >> 2;
   ldrS.ldr = temp;
   bothS.ldr = temp;
 
@@ -137,16 +130,12 @@ void OnDataReceive(const uint8_t *mac_addr, const uint8_t *incomingData, int len
 
   bothS.x = x;
   bothS.y = y;
+  dirS.x = x;
+  dirS.y = y;
 
-  result1 = esp_now_send(ldrReceiver, (uint8_t *)&ldrS, sizeof(ldrSend));
-  result2 = esp_now_send(directionReceiver, (uint8_t *)&ldrS, sizeof(dirS));
-  result3 = esp_now_send(bothReceiver, (uint8_t *)&bothS, sizeof(bothS));
-
-  if (result1 == ESP_OK && result2 == ESP_OK && result3 == ESP_OK) {
-    Serial.println("Sending confirmed");
-  } else {
-    Serial.println("Sending error");
-  }
+  Serial.println(temp);
+  Serial.println(x);
+  Serial.println(y);
 }
 
 void setup() {
@@ -166,15 +155,51 @@ void setup() {
   pan.channel = 0;
   pan.encrypt = false;
   memcpy(pong.peer_addr, ldrReceiver, sizeof(ldrSend));
-  pong.channel = 1;
+  pong.channel = 0;
   pong.encrypt = false;
-  memcpy(kit.peer_addr, directionReceiver, sizeof(directionSend));
-  kit.channel = 2;
+  memcpy(kit.peer_addr, directionReceiver, sizeof(dirS));
+  kit.channel = 0;
   kit.encrypt = false;
   memcpy(nammon.peer_addr, bothReceiver, sizeof(bothSend));
-  nammon.channel = 3;
+  nammon.channel = 1;
   nammon.encrypt = false;
+
+  ldrS.ldr = 0;
+  dirS.x = 0;
+  dirS.y = 0;
+  bothS.ldr = 0;
+  bothS.x = 0;
+  bothS.y = 0;
+
+  if (esp_now_add_peer(&pong) != ESP_OK){
+    Serial.println("Failed to add pong");
+    return;
+  }
+
+  if (esp_now_add_peer(&kit) != ESP_OK){
+    Serial.println("Failed to add kit");
+    return;
+  }
+
+  if (esp_now_add_peer(&nammon) != ESP_OK){
+    Serial.println("Failed to add nammon");
+    return;
+  }
 }
 
 void loop() {
+  esp_err_t result1;
+  esp_err_t result2;
+  esp_err_t result3;
+
+  // result1 = esp_now_send(ldrReceiver, (uint8_t *)&ldrS, sizeof(ldrS));
+  // result2 = esp_now_send(directionReceiver, (uint8_t *)&dirS, sizeof(directionSend));
+  result3 = esp_now_send(bothReceiver, (uint8_t *)&bothS, sizeof(bothSend));
+
+  if (result2 == ESP_OK) {
+    Serial.println("Sending confirmed");
+  } else {
+    Serial.println("Sending error");
+  }
+  delay(1000);
 }

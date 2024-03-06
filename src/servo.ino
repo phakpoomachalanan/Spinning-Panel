@@ -10,6 +10,8 @@ static const int servoPin2 = 12;
 static const int delayTime = 50;
 Servo servo1;
 Servo servo2;
+int degree1 ;
+int degree2 ;
 
 struct angle {
   int x, y;
@@ -23,9 +25,6 @@ angle data;
 
 void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
   memcpy(&data, incomingData, sizeof(data));
-  Serial.print("Data received: \n");
-  Serial.printf("    x: %d\n",data.x);
-  Serial.printf("    y: %d\n",data.y);
 }
 
 void setup() {
@@ -41,15 +40,22 @@ void setup() {
   esp_now_register_recv_cb(OnDataRecv);
 }
 
+
 void loop() {
-    for(int posDegrees = 0; posDegrees <= 180; posDegrees+=90) {
-      if(posDegrees%10 == 0) {
-        Serial.println(posDegrees);
-      }
-      servo1.write(posDegrees);
-      for (int j = 0; j <= 180; j+=90) {
-        servo2.write(j);
-        delay(2500);
-      }
+  if (data.x > 90 && data.x < 270) {
+    degree1 = data.x - 90;
+    degree2 = 180 - data.y ;
+  } else {
+    degree1 = (data.x + 90) % 360;
+    degree2 = data.y;
   }
+
+  Serial.printf("---------------------------------------\n ");
+  Serial.printf("x: %d, degree_x: %d\n", data.x, degree1);
+  Serial.printf("y: %d, degree_y: %d\n", data.y, degree2);
+  
+  servo1.write(degree1);
+  servo2.write(degree2);
+
+  delay(1000);
 }
